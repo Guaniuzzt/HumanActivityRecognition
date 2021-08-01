@@ -6,7 +6,7 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 public class ActivityClassifier {
 
-    private static final String MODEL_FILE = "human_activity_recognition_3.pb";
+    private static final String MODEL_FILE = "model.pb";
     private static final String INPUT_NODE = "lstm_1_input";
     private static final String[] OUTPUT_NODES = {"output/Softmax"};
     private static final String OUTPUT_NODE = "output/Softmax";
