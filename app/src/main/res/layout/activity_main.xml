@@ -42,11 +42,20 @@
             android:layout_below="@id/running_TextView"
             />
 
+
+
         <TextView
             android:id="@+id/heartrate_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/jumping_TextView"
+            />
+
+        <TextView
+            android:id="@+id/activty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/heartrate_TextView"
             />
 
     </RelativeLayout>
