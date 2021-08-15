@@ -63,6 +63,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Interpreter jumpingtflite;
 
 
+
+
     private FileWriter mFileWriter;
 
 
@@ -179,7 +181,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
 
 
-        predictActivity();
+        try {
+            predictActivity();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -248,7 +254,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.d("file_created:", getCurrentTimeStamp());
     }
 
-    private void predictActivity() {
+    private void predictActivity() throws IOException {
         float[][][] input = new float[1][TIME_STAMP][6];
         //float[][][] input_for_hr = new float[1][TIME_STAMP][7];
 
@@ -320,25 +326,35 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             //Log.d("results", temp[0] + "/ " + temp[1] + "/ " + temp[2]  + "/ " + temp[3]);
             float[][] predicthr;
+            String[] har = new String[2];
             if(index == 0){
-                activityTextView.setText("The activty is: " + "站" );
-                Log.d("current", "站" );
+                activityTextView.setText("The activty is: " + "Standing" );
+                Log.d("current", "Standing" );
+                har[0] = getCurrentTimeStamp();
+                har[1] = "standing";
             }else if(index == 1){
-                activityTextView.setText("The activty is: " + "走" );
-                Log.d("current", "走" );
+                activityTextView.setText("The activty is: " + "Walking" );
+                Log.d("current", "Walking" );
                 //predicthr = doWalkingInference(input_for_hr);
                 //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
+                har[0] = getCurrentTimeStamp();
+                har[1] = "walking";
             }else if(index == 2){
-                activityTextView.setText("The activty is: " + "跑" );
-                Log.d("current", "跑" );
+                activityTextView.setText("The activty is: " + "Running" );
+                Log.d("current", "Running" );
                 //predicthr = doRunningInference(input_for_hr);
                // predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
+                har[0] = getCurrentTimeStamp();
+                har[1] = "running";
             }else if(index == 3){
-                activityTextView.setText("The activty is: " + "跳" );
-                Log.d("current", "跳" );
+                activityTextView.setText("The activty is: " + "Jumping Rope" );
+                Log.d("current", "Jumping Rope" );
                 //predicthr = doJumpingInference(input_for_hr);
                 //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
+                har[0] = getCurrentTimeStamp();
+                har[1] = "jumping";
             }
+            writecsv("har_record", har);
 
             ax.clear();
             ay.clear();
