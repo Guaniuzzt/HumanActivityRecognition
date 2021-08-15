@@ -113,7 +113,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         hr = new ArrayList<>();
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        //Log.d("sensorlist", mSensorManager.getSensorList(Sensor.TYPE_ALL).toString());
+        Log.d("sensorlist", mSensorManager.getSensorList(Sensor.TYPE_ALL).toString());
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mHeartrate = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
@@ -121,8 +121,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         //classifier = new ActivityClassifier(getApplicationContext());
 
-        mSensorManager.registerListener(this, mAccelerometer, 1000000000);
-        mSensorManager.registerListener(this, mGyroscope, 10000);
+        mSensorManager.registerListener(this, mAccelerometer, 2000000000);
+        mSensorManager.registerListener(this, mGyroscope, 2000000000);
         mSensorManager.registerListener(this, mHeartrate, 0);
 
     }
@@ -145,9 +145,9 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
             Log.d("sensor_ac_time" ,  getCurrentTimeStamp());
-            ax.add(event.values[0]);
-            ay.add(event.values[1]);
-            az.add(event.values[2]);
+            ax.add(event.values[0]/100);
+            ay.add(event.values[1]/100);
+            az.add(event.values[2]/100);
             Log.d("sensor_ac_data" ,  event.values[0] + "/" + event.values[1]  + "/"  + event.values[2]);
 
 
@@ -163,6 +163,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         }else if (sensor.getType() == Sensor.TYPE_HEART_RATE) {
 
             Log.d("sensor_hr_time" ,  getCurrentTimeStamp());
+
+            hr.add(event.values[0]);
+            hr.add(event.values[0]);
+            hr.add(event.values[0]);
+            hr.add(event.values[0]);
+            hr.add(event.values[0]);
             hr.add(event.values[0]);
             hr.add(event.values[0]);
             hr.add(event.values[0]);
@@ -170,13 +176,11 @@ public class MainActivity extends Activity implements SensorEventListener {
             hr.add(event.values[0]);
             heartrateTextiVew.setText("Current hr is: " + event.values[0]);
             Log.d("sensor_hr_data" ,  Arrays.toString(event.values));
+        }
 
-        }
-        try {
-            predictActivity();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        predictActivity();
+
     }
 
     @Override
@@ -244,48 +248,46 @@ public class MainActivity extends Activity implements SensorEventListener {
         Log.d("file_created:", getCurrentTimeStamp());
     }
 
-    private void predictActivity() throws IOException {
+    private void predictActivity() {
         float[][][] input = new float[1][TIME_STAMP][6];
-        float[][][] input_for_hr = new float[1][TIME_STAMP][7];
+        //float[][][] input_for_hr = new float[1][TIME_STAMP][7];
 
-        if (ax.size() >= TIME_STAMP && ay.size() >= TIME_STAMP && az.size() >= TIME_STAMP
-                && gx.size() >= TIME_STAMP && gy.size() >= TIME_STAMP && gz.size() >= TIME_STAMP && hr.size() >= TIME_STAMP) {
+        if (ax.size() >= TIME_STAMP  && ay.size() >= TIME_STAMP && az.size() >= TIME_STAMP
+                && gx.size() >= TIME_STAMP && gy.size() >= TIME_STAMP && gz.size() >= TIME_STAMP
+                && hr.size() >= TIME_STAMP
+        ) {
 
-            /*data.addAll(hr.subList(0, TIME_STAMP));
 
-            data.addAll(ax.subList(0, TIME_STAMP));
-            data.addAll(ay.subList(0, TIME_STAMP));
-            data.addAll(az.subList(0, TIME_STAMP));
+            Log.d("sensor_ac_size",ax.size() + "/" + ay.size() + "/" + az.size());
+            Log.d("sensor_gy_size",gx.size()+ "/" + gy.size()+ "/" + gz.size() );
+            Log.d("sensor_hr_size",String.valueOf(hr.size()));
 
-            data.addAll(gx.subList(0, TIME_STAMP));
-            data.addAll(gy.subList(0, TIME_STAMP));
-            data.addAll(gz.subList(0, TIME_STAMP));*/
-            Log.d("sensor_ac_size",String.valueOf(ax.size()));
-            Log.d("sensor_gx_size",String.valueOf(gx.size()));
-            Log.d("sensor_hr_size",String.valueOf(gx.size()));
             for(int i=0; i<TIME_STAMP; i++){
                 int j = 0;
-                input[0][i][j++] = ax.get(i*8);
-                input[0][i][j++] = ay.get(i*8);
-                input[0][i][j++] = az.get(i*8);
-                input[0][i][j++] = gx.get(i*8);
-                input[0][i][j++] = gy.get(i*8);
-                input[0][i][j] = gz.get(i*8);
+                input[0][i][j++] = ax.get(i);
+                input[0][i][j++] = ay.get(i);
+                input[0][i][j++] = az.get(i);
+                input[0][i][j++] = gx.get(i);
+                input[0][i][j++] = gy.get(i);
+                input[0][i][j] = gz.get(i);
             }
 
+            /*
             for(int i=0; i<TIME_STAMP; i++){
                 input_for_hr[0][i][0] = hr.get(i);
             }
 
             for(int i=0; i<TIME_STAMP; i++){
                 int j= 1;
-                input_for_hr[0][i][j++] = ax.get(i*8);
-                input_for_hr[0][i][j++] = ay.get(i*8);
-                input_for_hr[0][i][j++] = az.get(i*8);
-                input_for_hr[0][i][j++] = gx.get(i*8);
-                input_for_hr[0][i][j++] = gy.get(i*8);
-                input_for_hr[0][i][j] = gz.get(i*8);
+                input_for_hr[0][i][j++] = ax.get(i*9);
+                input_for_hr[0][i][j++] = ay.get(i*9);
+                input_for_hr[0][i][j++] = az.get(i*9);
+                input_for_hr[0][i][j++] = gx.get(i*9);
+                input_for_hr[0][i][j++] = gy.get(i*9);
+                input_for_hr[0][i][j] = gz.get(i*9);
             }
+
+             */
 
 
 
@@ -306,7 +308,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             }*/
 
 
-            writecsv();
+
 
 
 
@@ -319,23 +321,23 @@ public class MainActivity extends Activity implements SensorEventListener {
             //Log.d("results", temp[0] + "/ " + temp[1] + "/ " + temp[2]  + "/ " + temp[3]);
             float[][] predicthr;
             if(index == 0){
-                activityTextView.setText("The activty is: " + "Standing" );
-                Log.d("current", "Standing" );
+                activityTextView.setText("The activty is: " + "站" );
+                Log.d("current", "站" );
             }else if(index == 1){
-                activityTextView.setText("The activty is: " + "Walking" );
-                Log.d("current", "Walking" );
-                predicthr = doWalkingInference(input_for_hr);
-                predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
+                activityTextView.setText("The activty is: " + "走" );
+                Log.d("current", "走" );
+                //predicthr = doWalkingInference(input_for_hr);
+                //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
             }else if(index == 2){
-                activityTextView.setText("The activty is: " + "Running" );
-                Log.d("current", "Running" );
-                predicthr = doRunningInference(input_for_hr);
-                predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
+                activityTextView.setText("The activty is: " + "跑" );
+                Log.d("current", "跑" );
+                //predicthr = doRunningInference(input_for_hr);
+               // predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
             }else if(index == 3){
-                activityTextView.setText("The activty is: " + "Jumping" );
-                Log.d("current", "Jumping" );
-                predicthr = doJumpingInference(input_for_hr);
-                predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
+                activityTextView.setText("The activty is: " + "跳" );
+                Log.d("current", "跳" );
+                //predicthr = doJumpingInference(input_for_hr);
+                //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
             }
 
             ax.clear();
@@ -351,7 +353,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadModelFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("har_model3.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping_model.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
@@ -394,6 +396,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, 2000000000);
         mSensorManager.registerListener(this, mGyroscope, 100000000);
+        mSensorManager.registerListener(this, mHeartrate, 0);
     }
 
     @Override
