@@ -161,16 +161,16 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             Log.d("sensor_hr_time" ,  getCurrentTimeStamp());
 
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
-            hr.add(event.values[0]);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
+            hr.add(event.values[0]/100);
             heartrateTextiVew.setText("Current hr is: " + event.values[0]);
             Log.d("sensor_hr_data" ,  Arrays.toString(event.values));
             String[] temp = new String[2];
@@ -259,7 +259,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private void predictActivity() throws IOException {
         float[][][] input = new float[1][TIME_STAMP][6];
-        //float[][][] input_for_hr = new float[1][TIME_STAMP][7];
+        float[][][] input_for_hr = new float[1][TIME_STAMP][7];
 
         if (ax.size() >= TIME_STAMP  && ay.size() >= TIME_STAMP && az.size() >= TIME_STAMP
                 && gx.size() >= TIME_STAMP && gy.size() >= TIME_STAMP && gz.size() >= TIME_STAMP
@@ -281,7 +281,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 input[0][i][j] = gz.get(i);
             }
 
-            /*
+
             for(int i=0; i<TIME_STAMP; i++){
                 input_for_hr[0][i][0] = hr.get(i);
             }
@@ -296,7 +296,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 input_for_hr[0][i][j] = gz.get(i*9);
             }
 
-             */
+
 
 
 
@@ -328,7 +328,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             //jumpingTextView.setText("Jumping: \t" + results[0][3]);
 
             //Log.d("results", temp[0] + "/ " + temp[1] + "/ " + temp[2]  + "/ " + temp[3]);
-            float[][] predicthr;
+            float[][] predicthr = new float[0][0];
             String[] har = new String[2];
             String[] hr_result = new String[2];
             if(index == 0){
@@ -336,34 +336,36 @@ public class MainActivity extends Activity implements SensorEventListener {
                 Log.d("current", "Standing" );
                 har[0] = getCurrentTimeStamp();
                 har[1] = "standing";
-
             }else if(index == 1){
                 activityTextView.setText("The activty is: " + "Walking" );
                 Log.d("current", "Walking" );
-                //predicthr = doWalkingInference(input_for_hr);
+                predicthr = doWalkingInference(input_for_hr);
                 //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
                 har[0] = getCurrentTimeStamp();
                 har[1] = "walking";
                 hr_result[0] = getCurrentTimeStamp();
-                //hr[1] = predicthr[0][0];
+                hr_result[1] = String.valueOf(predicthr[0][0]);
+                Log.d("predicted heart rate walking", hr_result[1] );
             }else if(index == 2){
                 activityTextView.setText("The activty is: " + "Running" );
                 Log.d("current", "Running" );
-                //predicthr = doRunningInference(input_for_hr);
+                predicthr = doRunningInference(input_for_hr);
                // predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
                 har[0] = getCurrentTimeStamp();
                 har[1] = "running";
                 hr_result[0] = getCurrentTimeStamp();
-                //hr[1] = predicthr[0][0];
+                hr_result[1] = String.valueOf(predicthr[0][0]);
+                Log.d("predicted heart rate running", hr_result[1] );
             }else if(index == 3){
                 activityTextView.setText("The activty is: " + "Jumping Rope" );
                 Log.d("current", "Jumping Rope" );
-                //predicthr = doJumpingInference(input_for_hr);
+                predicthr = doJumpingInference(input_for_hr);
                 //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
                 har[0] = getCurrentTimeStamp();
                 har[1] = "jumping";
                 hr_result[0] = getCurrentTimeStamp();
-                //hr[1] = predicthr[0][0];
+                hr_result[1] = String.valueOf(predicthr[0][0]);
+                Log.d("predicted heart rate jumping", hr_result[1] );
             }
             writecsv("har_record", har);
             writecsv("predictedhr_record", hr_result);
@@ -380,7 +382,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadModelFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("har_model5.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("har_model.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
@@ -410,7 +412,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadJumpingFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("har_model5.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
