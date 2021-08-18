@@ -1,7 +1,6 @@
 package com.example.humanactivityrecognition;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,8 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import androidx.wear.ambient.AmbientModeSupport;
-
 import org.tensorflow.lite.Interpreter;
 
 import com.example.humanactivityrecognition.databinding.ActivityMainBinding;
@@ -20,13 +17,11 @@ import com.opencsv.CSVWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -178,6 +173,14 @@ public class MainActivity extends Activity implements SensorEventListener {
             hr.add(event.values[0]);
             heartrateTextiVew.setText("Current hr is: " + event.values[0]);
             Log.d("sensor_hr_data" ,  Arrays.toString(event.values));
+            String[] temp = new String[2];
+            temp[0] = getCurrentTimeStamp();
+            temp[1] = event.values[0] + "";
+            try {
+                writecsv("current_hr",temp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -327,11 +330,13 @@ public class MainActivity extends Activity implements SensorEventListener {
             //Log.d("results", temp[0] + "/ " + temp[1] + "/ " + temp[2]  + "/ " + temp[3]);
             float[][] predicthr;
             String[] har = new String[2];
+            String[] hr_result = new String[2];
             if(index == 0){
                 activityTextView.setText("The activty is: " + "Standing" );
                 Log.d("current", "Standing" );
                 har[0] = getCurrentTimeStamp();
                 har[1] = "standing";
+
             }else if(index == 1){
                 activityTextView.setText("The activty is: " + "Walking" );
                 Log.d("current", "Walking" );
@@ -339,6 +344,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                 //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
                 har[0] = getCurrentTimeStamp();
                 har[1] = "walking";
+                hr_result[0] = getCurrentTimeStamp();
+                //hr[1] = predicthr[0][0];
             }else if(index == 2){
                 activityTextView.setText("The activty is: " + "Running" );
                 Log.d("current", "Running" );
@@ -346,6 +353,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                // predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
                 har[0] = getCurrentTimeStamp();
                 har[1] = "running";
+                hr_result[0] = getCurrentTimeStamp();
+                //hr[1] = predicthr[0][0];
             }else if(index == 3){
                 activityTextView.setText("The activty is: " + "Jumping Rope" );
                 Log.d("current", "Jumping Rope" );
@@ -353,9 +362,11 @@ public class MainActivity extends Activity implements SensorEventListener {
                 //predictedHeartRateTextView.setText("Predict Heart is:" + predicthr[0][0]);
                 har[0] = getCurrentTimeStamp();
                 har[1] = "jumping";
+                hr_result[0] = getCurrentTimeStamp();
+                //hr[1] = predicthr[0][0];
             }
             writecsv("har_record", har);
-
+            writecsv("predictedhr_record", hr_result);
             ax.clear();
             ay.clear();
             az.clear();
@@ -369,7 +380,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadModelFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping_model.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("har_model5.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
@@ -399,7 +410,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadJumpingFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping_model.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("har_model5.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
