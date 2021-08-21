@@ -177,7 +177,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             temp[0] = getCurrentTimeStamp();
             temp[1] = event.values[0] + "";
             try {
-                writecsv("current_hr",temp);
+                writecsv("current_hr.csv",temp);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -273,12 +273,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             for(int i=0; i<TIME_STAMP; i++){
                 int j = 0;
-                input[0][i][j++] = ax.get(i);
-                input[0][i][j++] = ay.get(i);
-                input[0][i][j++] = az.get(i);
-                input[0][i][j++] = gx.get(i);
-                input[0][i][j++] = gy.get(i);
-                input[0][i][j] = gz.get(i);
+
+                input[0][i][j++] = ax.get(i * ax.size() / 50 );
+                input[0][i][j++] = ay.get(i * ay.size() / 50);
+                input[0][i][j++] = az.get(i * az.size() / 50);
+                input[0][i][j++] = gx.get(i * gx.size() / 50 );
+                input[0][i][j++] = gy.get(i * gy.size() / 50);
+                input[0][i][j] = gz.get(i * gz.size() / 50);
             }
 
 
@@ -288,12 +289,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 
             for(int i=0; i<TIME_STAMP; i++){
                 int j= 1;
-                input_for_hr[0][i][j++] = ax.get(i*9);
-                input_for_hr[0][i][j++] = ay.get(i*9);
-                input_for_hr[0][i][j++] = az.get(i*9);
-                input_for_hr[0][i][j++] = gx.get(i*9);
-                input_for_hr[0][i][j++] = gy.get(i*9);
-                input_for_hr[0][i][j] = gz.get(i*9);
+                input_for_hr[0][i][j++] = ax.get(i);
+                input_for_hr[0][i][j++] = ay.get(i);
+                input_for_hr[0][i][j++] = az.get(i);
+                input_for_hr[0][i][j++] = gx.get(i);
+                input_for_hr[0][i][j++] = gy.get(i);
+                input_for_hr[0][i][j] = gz.get(i);
             }
 
 
@@ -344,7 +345,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 har[0] = getCurrentTimeStamp();
                 har[1] = "walking";
                 hr_result[0] = getCurrentTimeStamp();
-                hr_result[1] = String.valueOf(predicthr[0][0]);
+                hr_result[1] = String.valueOf(predicthr[0][0]* 100);
                 Log.d("predicted heart rate walking", hr_result[1] );
             }else if(index == 2){
                 activityTextView.setText("The activty is: " + "Running" );
@@ -354,7 +355,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 har[0] = getCurrentTimeStamp();
                 har[1] = "running";
                 hr_result[0] = getCurrentTimeStamp();
-                hr_result[1] = String.valueOf(predicthr[0][0]);
+                hr_result[1] = String.valueOf(predicthr[0][0]* 100);
                 Log.d("predicted heart rate running", hr_result[1] );
             }else if(index == 3){
                 activityTextView.setText("The activty is: " + "Jumping Rope" );
@@ -364,11 +365,12 @@ public class MainActivity extends Activity implements SensorEventListener {
                 har[0] = getCurrentTimeStamp();
                 har[1] = "jumping";
                 hr_result[0] = getCurrentTimeStamp();
-                hr_result[1] = String.valueOf(predicthr[0][0]);
+                hr_result[1] = String.valueOf(predicthr[0][0]* 100) ;
                 Log.d("predicted heart rate jumping", hr_result[1] );
             }
-            writecsv("har_record", har);
-            writecsv("predictedhr_record", hr_result);
+            writecsv("har_record.csv", har);
+            writecsv("predicted_hr.csv", hr_result);
+
             ax.clear();
             ay.clear();
             az.clear();
@@ -412,7 +414,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadJumpingFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping_model.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
@@ -424,7 +426,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, 2000000000);
-        mSensorManager.registerListener(this, mGyroscope, 100000000);
+        mSensorManager.registerListener(this, mGyroscope, 200000000);
         mSensorManager.registerListener(this, mHeartrate, 0);
     }
 
