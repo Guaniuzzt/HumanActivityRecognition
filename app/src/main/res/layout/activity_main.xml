@@ -15,40 +15,27 @@
         android:padding="@dimen/inner_frame_layout_padding"
         app:layout_boxedEdges="all">
 
-        <TextView
-            android:id="@+id/standing_TextView"
+
+
+
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
+            android:text="Start"
+            android:id="@+id/start_button"/>
 
-        <TextView
-            android:id="@+id/walking_TextView"
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/standing_TextView"
-            />
-
-        <TextView
-            android:id="@+id/running_TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/walking_TextView"
-            />
-
-        <TextView
-            android:id="@+id/jumping_TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/running_TextView"
-            />
-
-
+            android:text="Stop"
+            android:layout_below="@id/start_button"
+            android:id="@+id/stop_button"/>
 
         <TextView
             android:id="@+id/heartrate_TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/jumping_TextView"
+            android:layout_below="@id/stop_button"
             />
 
         <TextView
@@ -58,12 +45,7 @@
             android:layout_below="@id/heartrate_TextView"
             />
 
-        <TextView
-            android:id="@+id/predicthr"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/activty"
-            />
+
 
     </RelativeLayout>
 </androidx.wear.widget.BoxInsetLayout>

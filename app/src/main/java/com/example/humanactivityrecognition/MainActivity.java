@@ -8,6 +8,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.tensorflow.lite.Interpreter;
@@ -49,7 +51,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float[][] results;
 
 
-    private TextView standingTextView, walkingTextView, runningTextView, jumpingTextView, activityTextView, heartrateTextiVew, predictedHeartRateTextView;
+    private TextView activityTextView, heartrateTextiVew;
+    private Button startbutton, stopbutton;
 
     private Interpreter tflite;
 
@@ -118,21 +121,47 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         //classifier = new ActivityClassifier(getApplicationContext());
 
+
+
+        startbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                collectdata();
+            }
+        });
+
+        stopbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSensor();
+            }
+        });
+
+    }
+
+    private void collectdata(){
         mSensorManager.registerListener(this, mAccelerometer, 2000000000);
         mSensorManager.registerListener(this, mGyroscope, 2000000000);
         mSensorManager.registerListener(this, mHeartrate, 0);
+    }
 
+    private void stopSensor(){
+        mSensorManager.unregisterListener(this);
+        ax.clear();
+        ay.clear();
+        az.clear();
+        gx.clear();
+        gy.clear();
+        gz.clear();
+        hr.clear();
     }
 
     private void initLayoutItems() {
 
-        //standingTextView = findViewById(R.id.standing_TextView);
-        //walkingTextView = findViewById(R.id.walking_TextView);
-        //runningTextView = findViewById(R.id.running_TextView);
-        //jumpingTextView = findViewById(R.id.jumping_TextView);
+        startbutton = findViewById(R.id.start_button);
+        stopbutton = findViewById(R.id.stop_button);
         activityTextView = findViewById(R.id.activty);
         heartrateTextiVew = findViewById(R.id.heartrate_TextView);
-        predictedHeartRateTextView = findViewById(R.id.predicthr);
     }
 
     @Override
