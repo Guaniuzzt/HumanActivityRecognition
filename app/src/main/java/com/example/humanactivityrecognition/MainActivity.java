@@ -113,7 +113,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         hr = new ArrayList<>();
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        Log.d("sensorlist", mSensorManager.getSensorList(Sensor.TYPE_ALL).toString());
+        //Log.d("sensorlist", mSensorManager.getSensorList(Sensor.TYPE_ALL).toString());
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mHeartrate = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
@@ -443,7 +443,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private MappedByteBuffer loadJumpingFile() throws IOException{
 
-        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping_model.tflite");
+        AssetFileDescriptor fileDescriptor = this.getAssets().openFd("jumping_model_93_36.tflite");
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel  =inputStream.getChannel();
         long startOffset = fileDescriptor.getStartOffset();
